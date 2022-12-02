@@ -233,14 +233,73 @@ INSERT INTO playerstats VALUES ('000000043', 2, 3, 0, 0, 0);
 INSERT INTO playerstats VALUES ('000000044', 11, 0, 0, 0, 0);
 
 --Jason's contributions
-SELECT school, fname, lname, wins, losses, draws, assists, goals, (goals+assists)/(wins+losses+draws) AS goals_assists_per_game
+--Goals and Assists per game by player
+SELECT school, fname, lname, (goals+assists)/(wins+losses+draws) AS goals_assists_per_game
 FROM player NATURAL JOIN standings NATURAL JOIN playerstats
+WHERE goals+assists > 0
 ORDER BY goals_assists_per_game DESC;
 
+--Cards Per Game by School
+DROP VIEW School_Fair_Play
+CREATE VIEW School_Fair_Play
+AS SELECT school, (sum(yellowcards)+sum(redcards))/(avg(wins)+avg(losses)+avg(draws)) AS cards_per_game
+FROM player NATURAL JOIN standings NATURAL JOIN playerstats GROUP BY school
+ORDER BY cards_per_game DESC;
+
+SELECT * FROM School_Fair_Play
+
+--Rankings as compared to cards
+DROP VIEW Ranking_vs_Fair_Play
+CREATE VIEW Ranking_vs_Fair_Play
+AS SELECT school, ranking, cards_per_game
+FROM standings NATURAL JOIN School_Fair_Play
+
+SELECT * FROM Ranking_vs_Fair_Play
+
+--Wins By Coach
 DROP VIEW Coach_Wins;
 CREATE VIEW Coach_Wins
 AS SELECT coach, COUNT(coach) AS wins 
 FROM games LEFT JOIN team ON winner = school GROUP BY coach;
+
+SELECT * FROM Coach_Wins;
+
+--Goals given up
+DROP VIEW Goals_Against_Home
+CREATE VIEW Goals_Against_Home
+AS SELECT hometeam, sum(awayscore) AS goals_against_home
+FROM games GROUP BY hometeam
+
+DROP VIEW Goals_Against_Away
+CREATE VIEW Goals_Against_Away
+AS SELECT awayteam, sum(homescore) AS goals_against_away
+FROM games GROUP BY awayteam
+
+DROP VIEW Total_Goals_Against
+CREATE VIEW Total_Goals_Against
+AS SELECT hometeam as school, goals_against_away+goals_against_home as goals_against
+FROM Goals_Against_Home FULL JOIN Goals_Against_Away ON hometeam = awayteam
+
+--Goals given up
+DROP VIEW Goals_for_Home
+CREATE VIEW Goals_for_Home
+AS SELECT hometeam, sum(homescore) AS goals_for_home
+FROM games GROUP BY hometeam
+
+DROP VIEW Goals_for_Away
+CREATE VIEW Goals_for_Away
+AS SELECT awayteam, sum(awayscore) AS goals_for_away
+FROM games GROUP BY awayteam
+
+DROP VIEW Total_Goals_for
+CREATE VIEW Total_Goals_for
+AS SELECT hometeam as school, goals_for_away+goals_for_home as goals_for
+FROM Goals_for_Home FULL JOIN Goals_for_Away ON hometeam = awayteam
+
+--Rankings Compared to Goal Statistics
+SELECT school, ranking, goals_for, goals_against
+FROM standings NATURAL JOIN Total_Goals_for NATURAL JOIN  Total_Goals_Against
+ORDER BY ranking
 
 SELECT * FROM Coach_Wins;
 
