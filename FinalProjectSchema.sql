@@ -276,15 +276,21 @@ CREATE VIEW Goals_Against_Home
 AS SELECT hometeam, sum(awayscore) AS goals_against_home
 FROM games GROUP BY hometeam;
 
+SELECT * FROM Goals_Against_Home;
+
 DROP VIEW Goals_Against_Away;
 CREATE VIEW Goals_Against_Away
 AS SELECT awayteam, sum(homescore) AS goals_against_away
 FROM games GROUP BY awayteam;
 
+SELECT * FROM Goals_Against_Away;
+
 DROP VIEW Total_Goals_Against;
 CREATE VIEW Total_Goals_Against
 AS SELECT hometeam as school, goals_against_away+goals_against_home as goals_against
 FROM Goals_Against_Home FULL JOIN Goals_Against_Away ON hometeam = awayteam;
+
+SELECT * FROM Total_Goals_Against;
 
 --Goals given up
 DROP VIEW Goals_for_Home;
@@ -292,15 +298,21 @@ CREATE VIEW Goals_for_Home
 AS SELECT hometeam, sum(homescore) AS goals_for_home
 FROM games GROUP BY hometeam;
 
+SELECT * FROM Goals_for_Home;
+
 DROP VIEW Goals_for_Away;
 CREATE VIEW Goals_for_Away
 AS SELECT awayteam, sum(awayscore) AS goals_for_away
 FROM games GROUP BY awayteam;
 
+SELECT * FROM Goals_for_Home;
+
 DROP VIEW Total_Goals_for;
 CREATE VIEW Total_Goals_for
 AS SELECT hometeam as school, goals_for_away+goals_for_home as goals_for
 FROM Goals_for_Home FULL JOIN Goals_for_Away ON hometeam = awayteam;
+
+SELECT * FROM Total_Goals_for;
 
 --Rankings Compared to Goal Statistics
 SELECT school, ranking, goals_for, goals_against
