@@ -232,6 +232,12 @@ INSERT INTO playerstats VALUES ('000000042', 15, 0, 0, 0, 0);
 INSERT INTO playerstats VALUES ('000000043', 2, 3, 0, 0, 0);
 INSERT INTO playerstats VALUES ('000000044', 11, 0, 0, 0, 0);
 
+SELECT * FROM player;
+SELECT * FROM team;
+SELECT * FROM standings ORDER BY ranking;
+SELECT * FROM games;
+SELECT * FROM playerstats;
+
 --Jason's contributions
 --Goals and Assists per game by player
 SELECT school, fname, lname, (goals+assists)/(wins+losses+draws) AS goals_assists_per_game
@@ -302,10 +308,3 @@ FROM standings NATURAL JOIN Total_Goals_for NATURAL JOIN  Total_Goals_Against
 ORDER BY ranking;
 
 SELECT * FROM Coach_Wins;
-
---Mitchell's contributions
-SELECT * FROM player;
-SELECT * FROM team;
-SELECT * FROM standings ORDER BY ranking;
-SELECT * FROM games;
-SELECT * FROM playerstats;
