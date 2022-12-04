@@ -315,8 +315,6 @@ FROM Goals_for_Home FULL JOIN Goals_for_Away ON hometeam = awayteam;
 SELECT * FROM Total_Goals_for;
 
 --Rankings Compared to Goal Statistics
-SELECT school, ranking, goals_for, goals_against
+SELECT school, ranking, goals_for-goals_against as goal_diff, goals_for, goals_against
 FROM standings NATURAL JOIN Total_Goals_for NATURAL JOIN  Total_Goals_Against
-ORDER BY ranking;
-
-SELECT * FROM Coach_Wins;
+ORDER BY ranking
