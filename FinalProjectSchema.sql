@@ -20,6 +20,7 @@ CREATE TABLE team (
     prevyrfinal char(4),
     coach       varchar2(15),
     city        varchar2(15),
+    noplayers   number(2),
     primary key (school)
 );
 
@@ -62,6 +63,35 @@ CREATE TABLE playerstats (
     primary key     (playerid, playerno),
     foreign key     (playerid) references player(playerid)
 );
+
+--Triggers to update number of players on divisional teams
+--DROP TRIGGER VillanovaNoPlayers;
+CREATE TRIGGER VillanovaNoPlayers
+AFTER UPDATE ON player
+BEGIN    
+    UPDATE team SET noplayers = (SELECT count(*) FROM player WHERE school = 'Villanova') WHERE school = 'Villanova';
+END;
+
+--DROP TRIGGER TempleNoPlayers;
+CREATE TRIGGER TempleNoPlayers
+AFTER UPDATE ON player
+BEGIN    
+    UPDATE team SET noplayers = (SELECT count(*) FROM player WHERE school = 'Temple') WHERE school = 'Temple';
+END;
+
+--DROP TRIGGER StJosephsNoPlayers;
+CREATE TRIGGER StJosephsNoPlayers
+AFTER UPDATE ON player
+BEGIN    
+    UPDATE team SET noplayers = (SELECT count(*) FROM player WHERE school = 'St. Josephs') WHERE school = 'St. Josephs';
+END;
+
+--DROP TRIGGER DrexelNoPlayers;
+CREATE TRIGGER DrexelNoPlayers
+AFTER UPDATE ON player
+BEGIN    
+    UPDATE team SET noplayers = (SELECT count(*) FROM player WHERE school = 'Drexel') WHERE school = 'Drexel';
+END;
 
 --Villanova
 INSERT INTO player VALUES ('000000001', 'John', 'Smith', 180, 72, 'Philadelphia', 19, null);
@@ -115,10 +145,12 @@ INSERT INTO player VALUES ('000000042', 'Will', 'Lee', 195, 75, 'Bronx', 19, nul
 INSERT INTO player VALUES ('000000043', 'Chris', 'Wang', 180, 71, 'Manhattan', 22, null);
 INSERT INTO player VALUES ('000000044', 'Adam', 'Banner', 190, 74, 'West Chester', 19, null);
 
-INSERT INTO team VALUES ('Villanova', 'Wildcats', '2018', 'Neptune', 'Villanova');
-INSERT INTO team VALUES ('Temple', 'Owls', null, 'Gallagher', 'Philadelphia');
-INSERT INTO team VALUES ('St. Josephs', 'Hawks', '1998', 'White', 'Philadelphia');
-INSERT INTO team VALUES ('Drexel', 'Dragons', '2004', 'Jones', 'Philadelphia');
+INSERT INTO team VALUES ('Villanova', 'Wildcats', '2018', 'Neptune', 'Villanova', null);
+INSERT INTO team VALUES ('Temple', 'Owls', null, 'Gallagher', 'Philadelphia', null);
+INSERT INTO team VALUES ('St. Josephs', 'Hawks', '1998', 'White', 'Philadelphia', null);
+INSERT INTO team VALUES ('Drexel', 'Dragons', '2004', 'Jones', 'Philadelphia', null);
+
+SELECT * FROM team; --Make sure noplayers are null before updating player.school
 
 UPDATE player SET school = 'Villanova' WHERE playerid = '000000001';
 UPDATE player SET school = 'Villanova' WHERE playerid = '000000002';
@@ -232,11 +264,11 @@ INSERT INTO playerstats VALUES ('000000042', 15, 0, 0, 0, 0);
 INSERT INTO playerstats VALUES ('000000043', 2, 3, 0, 0, 0);
 INSERT INTO playerstats VALUES ('000000044', 11, 0, 0, 0, 0);
 
-SELECT * FROM player;
-SELECT * FROM team;
-SELECT * FROM standings ORDER BY ranking;
-SELECT * FROM games;
-SELECT * FROM playerstats;
+--SELECT * FROM player;
+SELECT * FROM team; --make sure noplayers is updated
+--SELECT * FROM standings ORDER BY ranking;
+--SELECT * FROM games;
+--SELECT * FROM playerstats;
 
 --Jason's contributions
 --Goals and Assists per game by player
@@ -315,6 +347,8 @@ FROM Goals_for_Home FULL JOIN Goals_for_Away ON hometeam = awayteam;
 SELECT * FROM Total_Goals_for;
 
 --Rankings Compared to Goal Statistics
-SELECT school, ranking, goals_for-goals_against as goal_diff, goals_for, goals_against
+SELECT school, ranking, goals_for, goals_against
 FROM standings NATURAL JOIN Total_Goals_for NATURAL JOIN  Total_Goals_Against
-ORDER BY ranking
+ORDER BY ranking;
+
+SELECT * FROM Coach_Wins;
