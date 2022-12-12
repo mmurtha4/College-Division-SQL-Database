@@ -352,3 +352,36 @@ FROM standings NATURAL JOIN Total_Goals_for NATURAL JOIN  Total_Goals_Against
 ORDER BY ranking;
 
 SELECT * FROM Coach_Wins;
+
+--Jack Contributions
+
+--Players averaging 1 or more point per game for the season
+SELECT school, fname, lname, (goals+assists)/(wins+losses+draws) AS points_per_game
+FROM player NATURAL JOIN standings NATURAL JOIN playerstats
+WHERE (goals+assists)/(wins+losses+draws) >= 1
+ORDER BY points_per_game DESC;
+
+--Teams that have a record above .500 on the season
+SELECT school, (wins/(wins+losses)) AS team_record
+FROM standings
+WHERE (wins/(wins+losses)) >= .5
+ORDER BY team_record DESC;
+
+--Average age on Drexel's team
+SELECT AVG(age)
+FROM player
+WHERE school = 'Drexel';
+
+--What percentage of Villanova's goals are assisted?
+SELECT SUM(assists)/SUM(goals)*100 AS percentage_of_goals_assisted
+FROM player NATURAL JOIN playerstats
+WHERE school = 'Villanova';
+
+--Nested Queries
+--Players that have more than 3 cards on the season
+SELECT fname, lname, school FROM player P where EXISTS
+(SELECT * FROM playerstats PS where P.playerid=PS.playerid and (PS.yellowcards + PS.redcards > 3) );
+
+--Players that have more assists than goals
+SELECT fname, lname, school FROM player WHERE playerid IN
+(SELECT playerid FROM playerstats where assists>goals);
